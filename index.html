@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!-- template用のhtmlファイル -->
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>language tool</title>
+
+	<script src="/public/js/jquery.min.js"> </script>
+
+	<script src="/public/js/addtional.js"></script>
+	<link href="/public/css/additional.less" rel="stylesheet/less" type="text/css">
+	<script src="/public/js/less.min.js"></script>
+
+</head>
+
+<body>
+	<div class="container">
+		<!-- ========================= -->
+		<div id="title">translate text from camera</div>
+
+		<!-- ========================= -->
+		<div id="uploadImageZone">
+			<form id="imageForm">
+
+				<br>
+
+				<div id="buttonImageSelect" class="submitButton">
+					<p>Image</p>
+					<input type="file" id="imageSelect" onChange="canvasDraw();" />
+				</div>
+
+				<br>
+
+				<img id="preview" src="" style="display:none" />
+
+				<canvas id="canvas" style="display:none"></canvas>
+				<br>
+
+			</form>
+
+			<p>
+				<div id="buttonScanFile" class="submitButton" onclick="imageUpload();" style="display:none">
+					<p>let's scan</p>
+				</div>
+			</p>
+
+
+		</div>
+
+		<br>
+		<!-- ==============================================================================  style='display:none'         -->
+		<div id='ScanedTextZone'  style='display:none' >
+			<h1>Scaned Text</h1>
+
+			<div id="targetTranslate" name="targetTranslate" contenteditable="true"></div>
+			<br>
+			<div onclick="pushSelectedLanguage(this);" class="languageBox" lang="es" id="es"> <p>esañol</p> </div>
+			<div onclick="pushSelectedLanguage(this);" class="languageBox" lang="en" id="en"> <p>english </p> </div>
+			<div onclick="pushSelectedLanguage(this);" class="languageBox" lang="ja" id="ja"> <p>japanese</p> </div>
+			<div onclick="pushSelectedLanguage(this);" class="languageBox" lang="fr" id="fr"> <p>french  </p> </div>
+
+			<br>
+			<br>
+			<br>
+			<span>[</span>
+			<span id='sourceLanguage'></span>
+			<span>] => </span>
+
+			<span>[</span>
+			<span id='targetLanguage'></span>
+			<span>] </span>
+
+
+			<br>
+			<br>
+			<div class="submitButton" onclick="translateText()">
+				<p>let's translate</p>
+			</div>
+			<br>
+			<br>
+		</div>
+
+		<br>
+		<!-- ==============================================================================  style='display:none' -->
+
+		<div id='DoneTranslateZone' style='display:none'>
+
+			<h1>Done translate</h1>
+
+			<div contenteditable="true" id="doneTranslate" name="doneTranslate"></div>
+
+			<br>
+			<div class="submitButton" onclick="speechText()">
+				<p>let's hear</p>
+			</div>
+			if you cant speak, please close-open browser
+			<br>
+			<br>
+		</div>
+
+		<br>
+		<br>
+		<!-- ============================================================================== -->
+	</div>
+
+</body>
+
+</html>
