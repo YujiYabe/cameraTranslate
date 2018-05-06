@@ -63,13 +63,6 @@ func detectText(w io.Writer, filePath string) (string, string, error) {
 		detectLang = annotations[0].Locale
 		detectText = annotations[0].Description
 
-		// fmt.Fprintln(w, annotations)
-		// fmt.Fprintln(w, annotations[0].Description)
-		// fmt.Fprintln(w, "Text:")
-		// for _, annotation := range annotations {
-		// 	fmt.Fprintf(w, "%q\n", annotation.Description)
-		// }
-
 	}
 
 	return detectLang, detectText, nil
