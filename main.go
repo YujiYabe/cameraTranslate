@@ -53,8 +53,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 	ctx := context.Background()
 	httpRequest.ParseForm()
-	targetTranslate := httpRequest.Form["targetTranslate"][0]
-	transLanguage := httpRequest.Form["targetLanguage"][0]
+	targetTranslate := httpRequest.Form["sourceTranslatePhrase"][0]
+	transLanguage := httpRequest.Form["targetLanguageSymbole"][0]
+	// fmt.Println("=================")
+	// fmt.Println(httpRequest)
+	// fmt.Println(targetTranslate)
+	// fmt.Println(transLanguage)
+	// fmt.Println("=================")
 
 	// Creates a client.
 	client, err := translate.NewClient(ctx)
@@ -139,10 +144,10 @@ func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Reque
 
 	jsonBytes, err := json.Marshal(returnValue)
 
-	if err != nil {
-		fmt.Println("JSON Marshal error:", err)
-		return
-	}
+	// if err != nil {
+	// 	fmt.Println("JSON Marshal error:", err)
+	// 	return
+	// }
 
 	if err := os.Remove(filePath); err != nil {
 		fmt.Println(err)
