@@ -72,8 +72,7 @@
 								<v-card-title primary class="title">Scaned Text</v-card-title>
 
 								<v-flex d-flex xs10 sm10 md10>
-									<div v-text="sourceTranslatePhrase" contenteditable="true" class="divTextarea" >
-									</div>
+									<div id="sourceTranslatePhrase" v-text="sourceTranslatePhrase" contenteditable="true" class="divTextarea" ></div>
 								</v-flex>
 
 
@@ -156,7 +155,7 @@
 								<v-card-title primary class="title">Done translate</v-card-title>
 
 								<v-flex d-flex xs10 sm10 md10>
-									<div v-text="targetTranslatePhrase" contenteditable="true" class="divTextarea"></div>
+									<div id="targetTranslatePhrase" v-text="targetTranslatePhrase" contenteditable="true" class="divTextarea"></div>
 								</v-flex>
 
 
@@ -200,7 +199,6 @@
 
 	<link href="/public/css/additional.less" rel="stylesheet/less" type="text/css">
 	<script src="/public/js/less.min.js"></script>
-	<link href="flag-icon.css" type="text/css" rel="stylesheet">
 
 </body>
 

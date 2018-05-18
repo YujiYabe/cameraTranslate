@@ -10,12 +10,12 @@ new Vue({
 
 		isShowPreview: false,
 
-		// isShowButtonScanFile: false,
-		// isShowZoneScanedText: false,
-		// isShowZoneDoneTranslate: false,
-		isShowButtonScanFile: true,
-		isShowZoneScanedText: true,
-		isShowZoneDoneTranslate: true,
+		isShowButtonScanFile: false,
+		isShowZoneScanedText: false,
+		isShowZoneDoneTranslate: false,
+		// isShowButtonScanFile: true,
+		// isShowZoneScanedText: true,
+		// isShowZoneDoneTranslate: true,
 
 	},
 	mounted() {
@@ -154,11 +154,15 @@ new Vue({
 			return returnstr;
 		},
 
+		pushSourceTranslatePhrase: function ( event) {
+			localStorage.sourceTranslatePhrase = this.sourceTranslatePhrase;
+		},
+
+
 		pushSelectedLanguage: function (langName, event) {
 			var selectLang = langName;
 			this.targetLanguageSymbole = selectLang;
 			localStorage.selectedLanguage = selectLang;
-			chipLanguage
 		},
 
 		translateText: function (event) {
@@ -170,10 +174,11 @@ new Vue({
 			langPair.zh = 'zh';
 			langPair.ru = 'ru';
 
-			var sourceTranslatePhrase = this.sourceTranslatePhrase;
+			localStorage.sourceTranslatePhrase = this.sourceTranslatePhrase;
+
+			var sourceTranslatePhrase = document.getElementById('sourceTranslatePhrase').innerText;
 			var targetLanguageSymbole = this.targetLanguageSymbole;
 			var sourceLanguageSymbole = this.sourceLanguageSymbole;
-
 
 
 			if (langPair[sourceLanguageSymbole] == targetLanguageSymbole) {
@@ -201,7 +206,7 @@ new Vue({
 						localStorage.targetTranslatePhrase = unescapestr;
 
 						this.targetTranslatePhrase = localStorage.targetTranslatePhrase;
-	
+
 
 					}.bind(this)).catch(function (err) {
 						console.log(err);
@@ -247,10 +252,10 @@ new Vue({
 				.then(function (res) {
 					localStorage.sourceLanguageSymbole = res.data.detectLang;
 					localStorage.sourceTranslatePhrase = res.data.detectString;
-					localStorage.sourceTemporaryPhrase = res.data.detectString;
 					this.sourceLanguageSymbole = localStorage.sourceLanguageSymbole;
 					this.sourceTranslatePhrase = localStorage.sourceTranslatePhrase;
-					this.sourceTemporaryPhrase = localStorage.sourceTemporaryPhrase;
+
+					// document.getElementById('targetTranslatePhrase').innerText = sourceTranslatePhrase ; 
 
 					this.isShowZoneScanedText = true;
 
