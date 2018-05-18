@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"golang.org/x/net/context"
+	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 
 	vision "cloud.google.com/go/vision/apiv1"
 )
@@ -32,7 +33,8 @@ func init() {
 
 // detectText gets text from the Vision API for an image at the given file path.
 // func detectText(w io.Writer, filePath string) (string, string, error) {
-func detectText(w io.Writer, filePath string) (string, string, error) {
+// DetectTexts(ctx context.Context, img *pb.Image, ictx *pb.ImageContext, maxResults int, opts ...gax.CallOption)
+func detectText(w io.Writer, image *pb.Image) (string, string, error) {
 	ctx := context.Background()
 
 	client, err := vision.NewImageAnnotatorClient(ctx)
@@ -40,16 +42,6 @@ func detectText(w io.Writer, filePath string) (string, string, error) {
 		return "", "", err
 	}
 
-	f, err := os.Open(filePath)
-	if err != nil {
-		return "", "", err
-	}
-	defer f.Close()
-
-	image, err := vision.NewImageFromReader(f)
-	if err != nil {
-		return "", "", err
-	}
 	annotations, err := client.DetectTexts(ctx, image, nil, 10)
 	if err != nil {
 		return "", "", err

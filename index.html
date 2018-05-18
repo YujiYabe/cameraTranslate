@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- template用のhtmlファイル -->
 <html>
 
 <head>
@@ -46,11 +45,11 @@
 									<div v-show="isShowPreview">
 										<img id="preview" src="" />
 									</div>
-									<canvas id="canvas" class="devMode"></canvas>
+									<canvas id="canvas" name="canvas" class="devMode"></canvas>
 
 								</v-card>
 							</v-flex>
-
+							<br>
 
 							<!-- ====================== -->
 							<div v-on:click="imageUpload" id="buttonScanFile" v-show="isShowButtonScanFile">
@@ -85,25 +84,35 @@
 										<v-chip  class="test" class="cursor">español</v-chip>
 									</div>
 
-									<div v-on:click="pushSelectedLanguage('ja', $event)">
-										<v-chip  class="test" class="cursor">日本語</v-chip>
-									</div>
-
 									<div v-on:click="pushSelectedLanguage('en', $event)">
 										<v-chip  class="test" class="cursor">english</v-chip>
 									</div>
-
 									<div v-on:click="pushSelectedLanguage('fr', $event)">
 										<v-chip  class="test" class="cursor">Français</v-chip>
+									</div>
+									<div v-on:click="pushSelectedLanguage('ru', $event)">
+										<v-chip  class="test" class="cursor">Русский язык</v-chip>
+									</div>
+								</v-flex>
+
+								<v-flex d-flex xs1 sm1 md1>
+
+									<div v-on:click="pushSelectedLanguage('ja', $event)">
+										<v-chip  class="test" class="cursor">日本語</v-chip>
 									</div>
 
 									<div v-on:click="pushSelectedLanguage('zh', $event)">
 										<v-chip  class="test" class="cursor">中文-简体</v-chip>
 									</div>
 
-									<div v-on:click="pushSelectedLanguage('ru', $event)">
-										<v-chip  class="test" class="cursor">Русский язык</v-chip>
+									<div v-on:click="pushSelectedLanguage('ko', $event)">
+										<v-chip  class="test" class="cursor">한국어</v-chip>
 									</div>
+
+									<div v-on:click="pushSelectedLanguage('ar', $event)">
+										<v-chip  class="test" class="cursor">العربية</v-chip>
+									</div>
+
 
 								</v-flex>
 
@@ -121,7 +130,7 @@
 									</div>
 								</v-flex>
 
-
+								<br>
 								<!-- ====================== -->
 								<div v-on:click="translateText">
 									<v-flex d-flex xs6 sm6 md3>
@@ -140,16 +149,18 @@
 
 
 
+							<br>
 							<div v-show="isShowZoneDoneTranslate">
 
 								<!-- ====================== -->
 								<v-card-title primary class="title">Done translate</v-card-title>
 
 								<v-flex d-flex xs10 sm10 md10>
-									<span v-text="targetTranslatePhrase" class="divTextarea"></span>
+									<span v-text="targetTranslatePhrase" class="divTextarea" contenteditable="true" ></span>
 								</v-flex>
 
 
+								<br>
 								<!-- ====================== -->
 								<div v-on:click="speechText">
 									<v-flex d-flex xs6 sm6 md3>
@@ -165,10 +176,13 @@
 									<v-card-title primary class="explication">if you cant speak, please close-open browser</v-card-title>
 								</div>
 							</div>
-
+							<br>
+							<br>
+							<br>
+		
+		
 						</v-card>
 					</v-flex>
-
 
 
 

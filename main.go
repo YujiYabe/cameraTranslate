@@ -1,8 +1,3 @@
-// Copyright 2015 Google Inc. All rights reserved.
-// Use of this source code is governed by the Apache 2.0
-// license that can be found in the LICENSE file.
-
-// Sample helloworld is a basic App Engine flexible app.
 package main
 
 import (
@@ -11,11 +6,12 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
-	"time"
 
 	"cloud.google.com/go/translate"
+	vision "cloud.google.com/go/vision/apiv1"
 	"golang.org/x/net/context"
 	"golang.org/x/text/language"
 ) // -----------------------------------------------------------------
@@ -37,6 +33,7 @@ func main() {
 
 // -----------------------------------------------------------------
 func handle(w http.ResponseWriter, r *http.Request) {
+	outPutLog(r)
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
@@ -45,12 +42,14 @@ func handle(w http.ResponseWriter, r *http.Request) {
 
 // -----------------------------------------------------------------
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	outPutLog(r)
 	var templatefile = template.Must(template.ParseFiles("index.html"))
 	templatefile.Execute(w, "index.html")
 } // -----------------------------------------------------------------
 
 // -----------------------------------------------------------------
 func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
+	outPutLog(httpRequest)
 	ctx := context.Background()
 	httpRequest.ParseForm()
 	targetTranslate := httpRequest.Form["sourceTranslatePhrase"][0]
@@ -86,71 +85,33 @@ func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.
 
 // -----------------------------------------------------------------
 func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
+	outPutLog(httpRequest)
 
-	//MultipartReaderを用いて受け取ったファイルを読み込み
-	reader, err := httpRequest.MultipartReader()
+	var file multipart.File
+	var e error
 
-	var filePath string
-	//エラーが発生したら抜ける
+	file, _, e = httpRequest.FormFile("selectImage")
+	if e != nil {
+		return
+	}
+	image, err := vision.NewImageFromReader(file)
 	if err != nil {
-		http.Error(httpResponseWriter, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	//forで複数ファイルがある場合に、すべてのファイルが終わるまで読み込む
-	for {
-		part, err := reader.NextPart()
-		if err == io.EOF {
-			break
-		}
-
-		//ファイル名がない場合はスキップする
-		if part.FileName() == "" {
-			continue
-		}
-
-		const layout = "2006-01-02_15-04-05.000_"
-		// s := ""
-		t1 := time.Now()
-		t2 := t1.Format(layout)
-
-		filePath = "tempfile/" + t2 + part.FileName() + ".jpg"
-
-		// fmt.Println(filePath)
-		uploadedFile, err := os.Create(filePath)
-
-		if err != nil {
-			http.Error(httpResponseWriter, err.Error(), http.StatusInternalServerError)
-			uploadedFile.Close()
-			redirectToErrorPage(httpResponseWriter, httpRequest)
-			return
-		}
-
-		//作ったファイルに読み込んだファイルの内容 を丸ごとコピー
-		_, err = io.Copy(uploadedFile, part)
-		if err != nil {
-			http.Error(httpResponseWriter, err.Error(), http.StatusInternalServerError)
-			uploadedFile.Close()
-			redirectToErrorPage(httpResponseWriter, httpRequest)
-			return
-		}
-
-		uploadedFile.Close()
+	detectLang, detectText, err := detectText(os.Stdout, image)
+	if err != nil {
+		detectLang = ""
+		detectText = ""
 	}
 
-	detectLang, detectString := callDetectAPI(filePath)
-
-	returnValue := map[string]string{"detectLang": detectLang, "detectString": detectString}
+	returnValue := map[string]string{"detectLang": detectLang, "detectString": detectText}
 
 	jsonBytes, err := json.Marshal(returnValue)
 
-	// if err != nil {
-	// 	fmt.Println("JSON Marshal error:", err)
-	// 	return
-	// }
-
-	if err := os.Remove(filePath); err != nil {
-		fmt.Println(err)
+	if err != nil {
+		fmt.Println("JSON Marshal error:", err)
+		return
 	}
 
 	fmt.Fprintf(httpResponseWriter, string(jsonBytes))
@@ -165,4 +126,17 @@ func errorPageHandler(w http.ResponseWriter, r *http.Request) {
 // errorが起こった時にエラーページに遷移する
 func redirectToErrorPage(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/errorPage", http.StatusFound)
+} // -----------------------------------------------------------------
+
+func outPutLog(s interface{}) {
+	logfile, err := os.OpenFile("./log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		panic("cannnot open test.log:" + err.Error())
+	}
+	defer logfile.Close()
+
+	log.SetOutput(io.MultiWriter(logfile, os.Stdout))
+
+	log.SetFlags(log.Ldate | log.Ltime)
+	// log.Println(s)
 } // -----------------------------------------------------------------

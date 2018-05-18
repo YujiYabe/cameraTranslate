@@ -38,6 +38,8 @@ new Vue({
 			langPair.fr = 'fr-FR';
 			langPair.zh = 'zh-CN';
 			langPair.ru = 'ru-RU';
+			langPair.ko = 'ko-KO';
+			langPair.ar = 'ar-AR';
 			var targetLanguageSymbole = this.targetLanguageSymbole;
 
 			var synthes = new SpeechSynthesisUtterance();
