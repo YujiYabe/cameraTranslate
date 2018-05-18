@@ -7,14 +7,16 @@ new Vue({
 		sourceTranslatePhrase: '',
 		targetLanguageSymbole: '',
 		targetTranslatePhrase: '',
+
 		isShowPreview: false,
-		isShowButtonScanFile: false,
-		isShowZoneScanedText: false,
-		isShowZoneDoneTranslate: false,
-		// isShowButtonScanFile: true,
-		// isShowZoneScanedText: true,
-		// isShowZoneDoneTranslate: true,
-		
+
+		// isShowButtonScanFile: false,
+		// isShowZoneScanedText: false,
+		// isShowZoneDoneTranslate: false,
+		isShowButtonScanFile: true,
+		isShowZoneScanedText: true,
+		isShowZoneDoneTranslate: true,
+
 	},
 	mounted() {
 		//デフォルト変換先言語の設定
@@ -96,8 +98,8 @@ new Vue({
 
 
 				};
-				this.isShowPreview = true ; 
-				this.isShowButtonScanFile = true ; 
+				this.isShowPreview = true;
+				this.isShowButtonScanFile = true;
 
 				fr.readAsDataURL(file);
 			}
@@ -132,11 +134,11 @@ new Vue({
 				.replace(/>/g, "&gt;")
 				.replace(/\r/g, "&#13;")
 				.replace(/\n/g, "&#10;")
-				
+
 				; //-----------------------
 			return returnstr;
 		},
-		
+
 		escapeHTML: function (str, event) {
 			var returnstr = str
 				.replace(/&amp;/g, "&")
@@ -184,10 +186,6 @@ new Vue({
 
 				return;
 			} else {
-				// var post_data = {
-				// 	'sourceTranslatePhrase': sourceTranslatePhrase,
-				// 	'targetLanguageSymbole': targetLanguageSymbole,
-				// };
 
 				var post_data = new URLSearchParams();
 				post_data.append('sourceTranslatePhrase', sourceTranslatePhrase);
@@ -199,7 +197,11 @@ new Vue({
 
 						var unescapestr = this.escapeHTML(res.data);
 						console.log(unescapestr);
-						this.targetTranslatePhrase = unescapestr;
+
+						localStorage.targetTranslatePhrase = unescapestr;
+
+						this.targetTranslatePhrase = localStorage.targetTranslatePhrase;
+	
 
 					}.bind(this)).catch(function (err) {
 						console.log(err);
@@ -243,8 +245,13 @@ new Vue({
 
 			axios.post('scan', formData)
 				.then(function (res) {
-					this.sourceLanguageSymbole = res.data.detectLang;
-					this.sourceTranslatePhrase = res.data.detectString;
+					localStorage.sourceLanguageSymbole = res.data.detectLang;
+					localStorage.sourceTranslatePhrase = res.data.detectString;
+					localStorage.sourceTemporaryPhrase = res.data.detectString;
+					this.sourceLanguageSymbole = localStorage.sourceLanguageSymbole;
+					this.sourceTranslatePhrase = localStorage.sourceTranslatePhrase;
+					this.sourceTemporaryPhrase = localStorage.sourceTemporaryPhrase;
+
 					this.isShowZoneScanedText = true;
 
 				}.bind(this)).catch(function (err) {
