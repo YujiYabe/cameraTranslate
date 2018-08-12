@@ -1,0 +1,18 @@
+# https://cloud.google.com/appengine/docs/standard/go/building-app/creating-your-application
+# https://qiita.com/tanksuzuki/items/3498c6942b7a2ff6dd51
+# dev_appserver.py app.yaml
+runtime: go
+api_version: go1
+
+nobuild_files: 
+- vendor/.*$
+skip_files:
+- vendor/.*$
+
+handlers:
+# All URLs are handled by the Go application script
+
+- url: /.*
+  script: _go_app
+  secure: always
+

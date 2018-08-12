@@ -1,18 +1,19 @@
+// dev_appserver.py app.yaml
+
 package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
-	"io"
-	"log"
 	"mime/multipart"
-	"net/http"
 	"os"
+	"fmt"
+	"net/http"
 
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/log"
 	"cloud.google.com/go/translate"
 	vision "cloud.google.com/go/vision/apiv1"
-	"golang.org/x/net/context"
 	"golang.org/x/text/language"
 ) // -----------------------------------------------------------------
 
@@ -25,82 +26,52 @@ func main() {
 	http.HandleFunc("/translate", translateHandler)
 
 	http.HandleFunc("/errorPage", errorPageHandler)
-
-	log.Print("Listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	http.HandleFunc("/sw.js", SwHandler)
+	http.HandleFunc("/manifest.json", ManifestHandler)
+	appengine.Main() 
 
 } // -----------------------------------------------------------------
 
-// -----------------------------------------------------------------
-func handle(w http.ResponseWriter, r *http.Request) {
-	outPutLog(r)
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-} // -----------------------------------------------------------------
 
 // -----------------------------------------------------------------
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	outPutLog(r)
+func indexHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 	var templatefile = template.Must(template.ParseFiles("index.html"))
-	templatefile.Execute(w, "index.html")
+	templatefile.Execute(httpResponseWriter, "index.html")
 } // -----------------------------------------------------------------
 
 // -----------------------------------------------------------------
-func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
-	outPutLog(httpRequest)
-	ctx := context.Background()
-	httpRequest.ParseForm()
-	targetTranslate := httpRequest.Form["sourceTranslatePhrase"][0]
-	transLanguage := httpRequest.Form["targetLanguageSymbole"][0]
-	// fmt.Println("=================")
-	// fmt.Println(httpRequest)
-	// fmt.Println(targetTranslate)
-	// fmt.Println(transLanguage)
-	// fmt.Println("=================")
-
-	// Creates a client.
-	client, err := translate.NewClient(ctx)
-	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
-	}
-
-	text := targetTranslate
-
-	target, err := language.Parse(transLanguage)
-	if err != nil {
-		log.Fatalf("Failed to parse target language: %v", err)
-	}
-
-	// Translates the text into Russian.
-	translations, err := client.Translate(ctx, []string{text}, target, nil)
-	if err != nil {
-		log.Fatalf("Failed to translate text: %v", err)
-	}
-
-	fmt.Fprint(httpResponseWriter, translations[0].Text)
-
+func ManifestHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "manifest.json")
 } // -----------------------------------------------------------------
 
 // -----------------------------------------------------------------
+func SwHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "sw.js")
+} // -----------------------------------------------------------------
+
+	// -----------------------------------------------------------------
 func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
-	outPutLog(httpRequest)
+	ctx := appengine.NewContext(httpRequest)
 
 	var file multipart.File
 	var e error
 
 	file, _, e = httpRequest.FormFile("selectImage")
+
 	if e != nil {
-		return
-	}
-	image, err := vision.NewImageFromReader(file)
-	if err != nil {
+		log.Errorf(ctx, "Error: %v", e)
 		return
 	}
 
-	detectLang, detectText, err := detectText(os.Stdout, image)
+	image, err := vision.NewImageFromReader(file)
 	if err != nil {
+		log.Errorf(ctx, "Error: %v", e)
+		return
+	}
+
+	detectLang, detectText, err := detectText(os.Stdout, image, httpRequest)
+	if err != nil {
+		log.Errorf(ctx, "Error: %v", e)
 		detectLang = ""
 		detectText = ""
 	}
@@ -109,12 +80,43 @@ func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Reque
 
 	jsonBytes, err := json.Marshal(returnValue)
 
+
 	if err != nil {
-		fmt.Println("JSON Marshal error:", err)
+		log.Errorf(ctx, "Error: %v", e)
 		return
 	}
-
 	fmt.Fprintf(httpResponseWriter, string(jsonBytes))
+
+} // -----------------------------------------------------------------
+
+// -----------------------------------------------------------------
+func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
+	ctx := appengine.NewContext(httpRequest)
+
+	httpRequest.ParseForm()
+	targetTranslate := httpRequest.Form["sourceTranslatePhrase"][0]
+	transLanguage := httpRequest.Form["targetLanguageSymbole"][0]
+
+	// Creates a client.
+	client, e := translate.NewClient(ctx)
+	if e != nil {
+		log.Errorf(ctx, "Failed to create client: : %v", e)
+	}
+
+	text := targetTranslate
+
+	target, e := language.Parse(transLanguage)
+	if e != nil {
+		log.Errorf(ctx, "Failed to parse target language:: %v", e)
+	}
+
+	// Translates the text into Russian.
+	translations, e := client.Translate(ctx, []string{text}, target, nil)
+	if e != nil {
+		log.Errorf(ctx, "Failed to translate text: : %v", e)
+	}
+
+	fmt.Fprint(httpResponseWriter, translations[0].Text)
 
 } // -----------------------------------------------------------------
 
@@ -123,20 +125,3 @@ func errorPageHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", "<p>Internal Server Error</p>")
 } // -----------------------------------------------------------------
 
-// errorが起こった時にエラーページに遷移する
-func redirectToErrorPage(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/errorPage", http.StatusFound)
-} // -----------------------------------------------------------------
-
-func outPutLog(s interface{}) {
-	logfile, err := os.OpenFile("./log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		panic("cannnot open test.log:" + err.Error())
-	}
-	defer logfile.Close()
-
-	log.SetOutput(io.MultiWriter(logfile, os.Stdout))
-
-	log.SetFlags(log.Ldate | log.Ltime)
-	// log.Println(s)
-} // -----------------------------------------------------------------
