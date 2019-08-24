@@ -88,9 +88,8 @@ new Vue({
 		imageUpload: function (event) {
 			// this.wait = true;
 			this.displayWaitImage(true);
-			var form = document.getElementById('imageForm');
-			var formData = new FormData(form);
-
+			// var formData = new FormData(form);
+			var formData = new FormData(document.getElementById("imageForm"));
 			//画像処理してformDataに追加
 			if (Object.keys(document.getElementById('canvas')).length) {
 

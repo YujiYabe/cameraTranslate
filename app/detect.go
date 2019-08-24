@@ -14,6 +14,7 @@ import (
 	// "fmt"
 	"io"
 	"os"
+
 	// "strings"
 	"net/http"
 
@@ -55,12 +56,9 @@ func detectText(w io.Writer, image *pb.Image, httpRequest *http.Request) (string
 	if len(annotations) == 0 {
 		// fmt.Fprintln(w, "No text found.")
 		return "", "", nil
-	} else {
-		detectLang = annotations[0].Locale
-		detectText = annotations[0].Description
-
 	}
-
+	detectLang = annotations[0].Locale
+	detectText = annotations[0].Description
 	return detectLang, detectText, nil
 }
 

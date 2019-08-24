@@ -4,17 +4,17 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"mime/multipart"
-	"os"
-	"fmt"
 	"net/http"
+	"os"
 
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
 	"cloud.google.com/go/translate"
 	vision "cloud.google.com/go/vision/apiv1"
 	"golang.org/x/text/language"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/log"
 ) // -----------------------------------------------------------------
 
 // -----------------------------------------------------------------
@@ -26,12 +26,11 @@ func main() {
 	http.HandleFunc("/translate", translateHandler)
 
 	http.HandleFunc("/errorPage", errorPageHandler)
-	http.HandleFunc("/sw.js", SwHandler)
-	http.HandleFunc("/manifest.json", ManifestHandler)
-	appengine.Main() 
+	http.HandleFunc("/sw.js", swHandler)
+	http.HandleFunc("/manifest.json", manifestHandler)
+	appengine.Main()
 
 } // -----------------------------------------------------------------
-
 
 // -----------------------------------------------------------------
 func indexHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
@@ -40,16 +39,16 @@ func indexHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Requ
 } // -----------------------------------------------------------------
 
 // -----------------------------------------------------------------
-func ManifestHandler(w http.ResponseWriter, r *http.Request) {
+func manifestHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "manifest.json")
 } // -----------------------------------------------------------------
 
 // -----------------------------------------------------------------
-func SwHandler(w http.ResponseWriter, r *http.Request) {
+func swHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "sw.js")
 } // -----------------------------------------------------------------
 
-	// -----------------------------------------------------------------
+// -----------------------------------------------------------------
 func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 	ctx := appengine.NewContext(httpRequest)
 
@@ -79,7 +78,6 @@ func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Reque
 	returnValue := map[string]string{"detectLang": detectLang, "detectString": detectText}
 
 	jsonBytes, err := json.Marshal(returnValue)
-
 
 	if err != nil {
 		log.Errorf(ctx, "Error: %v", e)
@@ -124,4 +122,3 @@ func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.
 func errorPageHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", "<p>Internal Server Error</p>")
 } // -----------------------------------------------------------------
-

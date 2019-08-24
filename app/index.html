@@ -42,16 +42,18 @@
 
 								<label for="imageSelect">
 									<v-flex d-flex xs6 sm6 md3>
-										<input type="file" id="imageSelect" v-on:change="canvasDraw" accept="image/png, image/jpeg, image/gif" />
+										<input type="file" id="imageSelect" v-on:change="canvasDraw"
+											accept="image/png, image/jpeg, image/gif" />
 										<v-chip color="primary" text-color="white">
 											<v-avatar>
 												<v-icon>photo_camera</v-icon>
 											</v-avatar>
-											Image</v-chip>
+											Image
+										</v-chip>
 									</v-flex>
 								</label>
 
-
+								<form id='imageForm'></form>
 								<v-flex d-flex xs10 sm10 md10>
 									<v-card flat="true">
 										<div v-show="isShowPreview">
@@ -84,7 +86,8 @@
 									<v-card-title primary class="title">Scaned Text</v-card-title>
 
 									<v-flex d-flex xs10 sm10 md10>
-										<div id="sourceTranslatePhrase" v-text="sourceTranslatePhrase" contenteditable="true" class="divTextarea"></div>
+										<div id="sourceTranslatePhrase" v-text="sourceTranslatePhrase"
+											contenteditable="true" class="divTextarea"></div>
 									</v-flex>
 
 
@@ -129,7 +132,7 @@
 									</v-flex>
 
 									<v-flex d-flex xs6 sm6 md3>
-										<div style="float: left">
+										<h1 style="float: left">
 											<span>[</span>
 											<span v-text="sourceLanguageSymbole">en</span>
 											<span>]</span>
@@ -139,7 +142,7 @@
 											<span>[</span>
 											<span v-text="targetLanguageSymbole"></span>
 											<span>]</span>
-										</div>
+										</h1>
 									</v-flex>
 
 									<br>
@@ -168,7 +171,8 @@
 									<v-card-title primary class="title">Done translate</v-card-title>
 
 									<v-flex d-flex xs10 sm10 md10>
-										<div id="targetTranslatePhrase" v-text="targetTranslatePhrase" contenteditable="true" class="divTextarea"></div>
+										<div id="targetTranslatePhrase" v-text="targetTranslatePhrase"
+											contenteditable="true" class="divTextarea"></div>
 									</v-flex>
 
 
@@ -185,7 +189,8 @@
 											</v-chip>
 
 										</v-flex>
-										<v-card-title primary class="explication">if you cant speak, please close-open browser</v-card-title>
+										<v-card-title primary class="explication">if you cant speak, please close-open
+											browser</v-card-title>
 									</div>
 								</div>
 								<br>
