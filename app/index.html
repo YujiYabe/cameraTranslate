@@ -7,7 +7,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="manifest" href="manifest.json">
 	<link rel="icon" href="public/favicon.ico">
-	<!-- <script src="public/js/jquery.min.js"> </script> -->
 	<noscript>
 		<h1>Welcome To The App</h1>
 		<p style="color: red;">JavaScriptを有効にしてください。</p>
@@ -218,13 +217,13 @@
 	<script src="/public/js/less.min.js"></script>
 
 	<script>
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('sw.js').then(function (registration) {
-				console.log('ServiceWorker registration successful with scope: ', registration.scope);
-			}).catch(function (err) {
-				console.log('ServiceWorker registration failed: ', err);
-			});
-		}
+		// if ('serviceWorker' in navigator) {
+		// 	navigator.serviceWorker.register('sw.js').then(function (registration) {
+		// 		console.log('ServiceWorker registration successful with scope: ', registration.scope);
+		// 	}).catch(function (err) {
+		// 		console.log('ServiceWorker registration failed: ', err);
+		// 	});
+		// }
 	</script>
 
 </body>

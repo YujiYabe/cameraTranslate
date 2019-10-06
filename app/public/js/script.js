@@ -151,6 +151,8 @@ new Vue({
 			langPair.fr = 'fr';
 			langPair.zh = 'zh';
 			langPair.ru = 'ru';
+			langPair.ko = 'ko';
+			langPair.ru = 'ru';
 
 			localStorage.sourceTranslatePhrase = this.sourceTranslatePhrase;
 
@@ -301,15 +303,6 @@ new Vue({
 			}
 		},
 
-
-		// //=========================================================================-
-		// testClick: function (event) {
-		// 	if (this.wait) {
-		// 		this.wait = false;
-		// 	} else {
-		// 		this.wait = true;
-		// 	}
-		// },
 
 
 	}

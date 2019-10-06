@@ -14,7 +14,7 @@ import (
 	// "fmt"
 	"io"
 	"os"
-
+	"fmt"
 	// "strings"
 	"net/http"
 
@@ -44,6 +44,7 @@ func detectText(w io.Writer, image *pb.Image, httpRequest *http.Request) (string
 
 	client, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
+		fmt.Println(err)
 		return "", "", err
 	}
 
@@ -57,8 +58,13 @@ func detectText(w io.Writer, image *pb.Image, httpRequest *http.Request) (string
 		// fmt.Fprintln(w, "No text found.")
 		return "", "", nil
 	}
+
+
 	detectLang = annotations[0].Locale
 	detectText = annotations[0].Description
+	fmt.Println(detectLang)
+	// fmt.Println("12")
+
 	return detectLang, detectText, nil
 }
 
