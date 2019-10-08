@@ -23,11 +23,11 @@
 <body>
 
 	<div id="app">
-		<div id="waitImageZone" align="center"  >
+		<div id="waitImageZone" align="center">
 			<img border="0" src="./public/wait.gif" max-width="80%" max-height="80%">
 		</div>
 
-		<div id="applicationZone" >
+		<div id="applicationZone">
 			<v-app id="inspire">
 				<v-container fluid grid-list-md>
 					<v-layout row wrap>
@@ -133,6 +133,18 @@
 											<span>[</span>
 											<span v-text="sourceLanguageSymbole">en</span>
 											<span>]</span>
+
+
+											<!-- <div v-for="[key, val] in [...langSet]">
+												{{key}}:{{val}}
+											</div> -->
+
+											<tr v-for="(value, key, index) in langSet" v-bind:key="value.id">
+												<td>{{ index }}</td>
+												<td>{{ key }}</td>
+												<td>{{ value }}</td>
+											</tr>
+
 
 											<span> ⇒ </span>
 
