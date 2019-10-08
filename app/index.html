@@ -131,25 +131,19 @@
 									<v-flex d-flex xs6 sm6 md3>
 										<h1 style="float: left">
 											<span>[</span>
-											<span v-text="sourceLanguageSymbole">en</span>
+											<span v-text="sourceLanguageName"></span>
 											<span>]</span>
 
 
-											<!-- <div v-for="[key, val] in [...langSet]">
-												{{key}}:{{val}}
-											</div> -->
 
-											<tr v-for="(value, key, index) in langSet" v-bind:key="value.id">
-												<td>{{ index }}</td>
-												<td>{{ key }}</td>
-												<td>{{ value }}</td>
-											</tr>
+
+
 
 
 											<span> ⇒ </span>
 
 											<span>[</span>
-											<span v-text="targetLanguageSymbole"></span>
+											<span v-text="targetLanguageName"></span>
 											<span>]</span>
 										</h1>
 									</v-flex>

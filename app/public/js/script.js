@@ -13,6 +13,8 @@ new Vue({
     isShowButtonScanFile: true,
     isShowZoneScanedText: true,
     isShowZoneDoneTranslate: true,
+    sourceLanguageName: '',
+    targetLanguageName: '',
     langSet: {
       // 'ja': { 'translate': 'jp', 'speech': 'ja-JP' },
       // 'en': { 'translate': 'en', 'speech': 'en-US' },
@@ -22,20 +24,21 @@ new Vue({
       // 'ru': { 'translate': 'ru', 'speech': 'ru-RU' },
       // 'ko': { 'translate': 'ko', 'speech': 'ko-KO' },
       // 'ar': { 'translate': 'ar', 'speech': 'ar-AR' },
-      'ja': { 'translate': 'jp', 'speech': 'ja-JP', 'html': '日本語' },
-      'en': { 'translate': 'en', 'speech': 'en-US', 'html': 'english' },
-      'es': { 'translate': 'es', 'speech': 'es-ES', 'html': 'español' },
-      'fr': { 'translate': 'fr', 'speech': 'fr-FR', 'html': 'Français' },
-      'zh': { 'translate': 'zh', 'speech': 'zh-CN', 'html': '中文-简体' },
-      'ru': { 'translate': 'ru', 'speech': 'ru-RU', 'html': 'Русский язык' },
-      'ko': { 'translate': 'ko', 'speech': 'ko-KO', 'html': '한국어' },
-      'ar': { 'translate': 'ar', 'speech': 'ar-AR', 'html': 'العربية' },
+      'ja': { 'translate': 'jp', 'speech': 'ja-JP', 'name': '日本語' },
+      'en': { 'translate': 'en', 'speech': 'en-US', 'name': 'english' },
+      'es': { 'translate': 'es', 'speech': 'es-ES', 'name': 'español' },
+      'fr': { 'translate': 'fr', 'speech': 'fr-FR', 'name': 'Français' },
+      'zh': { 'translate': 'zh', 'speech': 'zh-CN', 'name': '中文-简体' },
+      'ru': { 'translate': 'ru', 'speech': 'ru-RU', 'name': 'Русский язык' },
+      'ko': { 'translate': 'ko', 'speech': 'ko-KO', 'name': '한국어' },
+      'ar': { 'translate': 'ar', 'speech': 'ar-AR', 'name': 'العربية' },
     }
   },
 
   mounted() {
     //デフォルト変換先言語の設定
     this.setTargetLanguageSymbole(this.getLocalstorageTargetLanguageSymbole() || "ja");
+    this.setTargetLanguageName(this.getTargetLanguageSymbole());
     this.displayWaitImage(false);
   },
   methods: {
@@ -122,6 +125,7 @@ new Vue({
       axios.post('scan', formData)
         .then(function (res) {
           this.setSourceLanguageSymbole(res.data.detectLang);
+          this.setSourceLanguageName(res.data.detectLang);
           this.setSourceTranslatePhrase(res.data.detectString);
 
           this.setIsShowZoneScanedText(true);
@@ -206,6 +210,8 @@ new Vue({
     pushSelectedLanguage: function (langName, event) {
       this.setTargetLanguageSymbole(langName);
       this.setLocalstorageTargetLanguageSymbole(langName);
+      this.setTargetLanguageName(langName);
+
     },
 
     //=========================================================================-
@@ -287,7 +293,10 @@ new Vue({
     getTargetTranslatePhrase: function () { return this.targetTranslatePhrase; },
     getLocalstorageTargetLanguageSymbole: function () { return localStorage.selectedLanguage; },
 
-    // setter___________________-
+    getSourceLanguageName: function () { return this.sourceLanguageName; },
+    getTargetLanguageName: function () { return this.targetLanguageName; },
+
+    // setter___________________
     setIsShowPreview: function (context) { this.isShowPreview = context; },
     setIsShowButtonScanFile: function (context) { this.isShowButtonScanFile = context; },
     setIsShowZoneScanedText: function (context) { this.isShowZoneScanedText = context; },
@@ -298,6 +307,16 @@ new Vue({
     setTargetLanguageSymbole: function (context) { this.targetLanguageSymbole = context; },
     setTargetTranslatePhrase: function (context) { this.targetTranslatePhrase = context; },
     setLocalstorageTargetLanguageSymbole: function (context) { localStorage.selectedLanguage = context; },
+
+    setSourceLanguageName: function (context) {
+      const langSet = this.getLangSet();
+      this.sourceLanguageName = langSet[context]['name'];
+    },
+    setTargetLanguageName: function (context) {
+      const langSet = this.getLangSet();
+      this.targetLanguageName = langSet[context]['name'];
+    },
+
 
   }
 })
