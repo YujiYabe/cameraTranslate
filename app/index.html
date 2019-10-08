@@ -23,16 +23,11 @@
 <body>
 
 	<div id="app">
-		<div id="waitImageZone" align="center" :class="toggleIsWait(true)" >
-		<!-- <div id="waitImageZone" align="center"> -->
-		<!-- <div v-if="isWait == true" align="center"> -->
-
+		<div id="waitImageZone" align="center"  >
 			<img border="0" src="./public/wait.gif" max-width="80%" max-height="80%">
 		</div>
 
-		<div id="applicationZone"  :class="toggleIsWait(false)">
-		<!-- <div id="applicationZone" style="display: none;"> -->
-		<!-- <div v-if="isWait == false"> -->
+		<div id="applicationZone" >
 			<v-app id="inspire">
 				<v-container fluid grid-list-md>
 					<v-layout row wrap>
@@ -47,8 +42,9 @@
 										<input type="file" id="imageSelect" v-on:change="canvasDraw"
 											accept="image/png, image/jpeg, image/gif" />
 										<v-chip color="primary" text-color="white">
+
 											<v-avatar>
-												<v-icon>photo_camera</v-icon>
+												<v-icon right>photo_camera</v-icon>
 											</v-avatar>
 											Image
 										</v-chip>
@@ -73,7 +69,7 @@
 
 										<v-chip color="primary" text-color="white" class="cursor">
 											<v-avatar>
-												<v-icon>scanner</v-icon>
+												<v-icon right>scanner</v-icon>
 											</v-avatar>
 											let's scan
 										</v-chip>
@@ -97,17 +93,16 @@
 
 									<v-flex d-flex xs1 sm1 md1>
 										<div v-on:click="pushSelectedLanguage('es', $event)">
-											<v-chip class="test" class="cursor">español</v-chip>
+											<v-chip :class="methodClassAplly('es')" class="cursor">español</v-chip>
 										</div>
-
 										<div v-on:click="pushSelectedLanguage('en', $event)">
-											<v-chip class="test" class="cursor">english</v-chip>
+											<v-chip :class="methodClassAplly('en')" class="cursor">english</v-chip>
 										</div>
 										<div v-on:click="pushSelectedLanguage('fr', $event)">
-											<v-chip class="test" class="cursor">Français</v-chip>
+											<v-chip :class="methodClassAplly('fr')" class="cursor">Français</v-chip>
 										</div>
 										<div v-on:click="pushSelectedLanguage('ru', $event)">
-											<v-chip class="test" class="cursor">Русский язык</v-chip>
+											<v-chip :class="methodClassAplly('ru')" class="cursor">Русский язык</v-chip>
 										</div>
 									</v-flex>
 
@@ -115,19 +110,19 @@
 
 
 										<div v-on:click="pushSelectedLanguage('ja', $event)">
-											<v-chip class="test" class="cursor">日本語</v-chip>
+											<v-chip :class="methodClassAplly('ja')" class="cursor">日本語</v-chip>
 										</div>
 
 										<div v-on:click="pushSelectedLanguage('zh', $event)">
-											<v-chip class="test" class="cursor">中文-简体</v-chip>
+											<v-chip :class="methodClassAplly('zh')" class="cursor">中文-简体</v-chip>
 										</div>
 
 										<div v-on:click="pushSelectedLanguage('ko', $event)">
-											<v-chip class="test" class="cursor">한국어</v-chip>
+											<v-chip :class="methodClassAplly('ko')" class="cursor">한국어</v-chip>
 										</div>
 
 										<div v-on:click="pushSelectedLanguage('ar', $event)">
-											<v-chip class="test" class="cursor">العربية</v-chip>
+											<v-chip :class="methodClassAplly('ar')" class="cursor">العربية</v-chip>
 										</div>
 
 
@@ -154,7 +149,7 @@
 
 											<v-chip color="primary" text-color="white" class="cursor">
 												<v-avatar>
-													<v-icon>language</v-icon>
+													<v-icon right>language</v-icon>
 												</v-avatar>
 												let's translate
 											</v-chip>
@@ -185,7 +180,7 @@
 
 											<v-chip color="primary" text-color="white" class="cursor">
 												<v-avatar>
-													<v-icon>hearing</v-icon>
+													<v-icon right>hearing</v-icon>
 												</v-avatar>
 												let's hear
 											</v-chip>

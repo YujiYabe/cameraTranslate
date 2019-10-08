@@ -1,5 +1,3 @@
-// https://github.com/sekiyaeiji/vue2x-demo/blob/master/README.md
-
 new Vue({
   el: '#app',
   data: {
@@ -7,7 +5,6 @@ new Vue({
     sourceTranslatePhrase: '',
     targetLanguageSymbole: '',
     targetTranslatePhrase: '',
-    isWait: false,
     isShowPreview: false,
     isShowButtonScanFile: false,
     isShowZoneScanedText: false,
@@ -26,18 +23,10 @@ new Vue({
 
   mounted() {
     //デフォルト変換先言語の設定
-    const selectedLanguage = localStorage.selectedLanguage;
-    if (selectedLanguage != null) {
-      this.targetLanguageSymbole = localStorage.selectedLanguage;
-    } else {
-      this.targetLanguageSymbole = "es";
-    }
-    // this.setIsWait(false);
+    this.setTargetLanguageSymbole(this.getLocalstorageTargetLanguageSymbole() || "ja");
     this.displayWaitImage(false);
-
   },
   methods: {
-
 
     //=========================================================================-
     canvasDraw: function (event) {
@@ -77,7 +66,6 @@ new Vue({
             }
           }, 10);
 
-
         };
         this.setIsShowPreview(true);
         this.setIsShowButtonScanFile(true);
@@ -89,9 +77,9 @@ new Vue({
 
     //=========================================================================-
     imageUpload: function (event) {
-      this.toggleIsWait(true);
-			// this.displayWaitImage(true);
+      this.displayWaitImage(true);
 
+      const maxSize = 2000000;
       let formData = new FormData(document.getElementById("imageForm"));
 
       //画像処理してformDataに追加
@@ -108,9 +96,9 @@ new Vue({
         const uploadBlob = originalBlob;
 
         //オリジナル容量が2MB以上かチェック
-        if (2000000 <= originalBlob["size"]) {
-          //2MB以下に落とす
-          const capacityRatio = 2000000 / originalBlob["size"];
+        if (maxSize <= originalBlob["size"]) {
+
+          const capacityRatio = maxSize / originalBlob["size"]; //2MB以下に落とす
           const processingBinary = canvasImage.toDataURL("image/jpeg", capacityRatio); //画質落としてバイナリ化
           uploadBlob = base64ToBlob(processingBinary); //画質落としたblobデータをアップロード用blobに設定
         }
@@ -125,13 +113,11 @@ new Vue({
           this.setSourceTranslatePhrase(res.data.detectString);
 
           this.setIsShowZoneScanedText(true);
-          // this.setIsWait(false);
-					this.displayWaitImage(false);
+          this.displayWaitImage(false);
 
         }.bind(this)).catch(function (err) {
           console.log(err);
-          // this.setIsWait(false);
-					this.displayWaitImage(false);
+          this.displayWaitImage(false);
 
         }.bind(this));
 
@@ -141,16 +127,13 @@ new Vue({
 
     //=========================================================================-
     translateText: function (event) {
-      this.setIsWait(true);
+      this.displayWaitImage(true);
 
       const langSet = this.getLangSet();
 
       const sourceTranslatePhrase = document.getElementById('sourceTranslatePhrase').innerText;
       const targetLanguageSymbole = this.getTargetLanguageSymbole();
       const sourceLanguageSymbole = this.getSourceLanguageSymbole();
-
-      console.log(sourceLanguageSymbole);
-
 
       if (langSet[sourceLanguageSymbole]['translate'] == targetLanguageSymbole) {
         // 翻訳先が同じ言語であればスキップ
@@ -159,14 +142,14 @@ new Vue({
         const unescapestr = this.unescapeHTML(targetTranslate);
 
         this.setTargetTranslatePhrase(unescapestr);
-        this.setIsWait(false);
+        this.displayWaitImage(false);
         return;
 
       } else {
-
         let post_data = new URLSearchParams();
         post_data.append('sourceTranslatePhrase', sourceTranslatePhrase);
         post_data.append('targetLanguageSymbole', targetLanguageSymbole);
+
         axios.post('translate', post_data)
           .then(function (res) {
             this.setIsShowZoneDoneTranslate(true);
@@ -174,10 +157,10 @@ new Vue({
             const unescapestr = this.escapeHTML(res.data);
 
             this.setTargetTranslatePhrase(unescapestr);
-            this.setIsWait(false);
+            this.displayWaitImage(false);
 
           }.bind(this)).catch(function (err) {
-            this.setIsWait(false);
+            this.displayWaitImage(false);
             console.log(err);
           }.bind(this));
 
@@ -186,7 +169,8 @@ new Vue({
 
     //=========================================================================-
     speechText: function (event) {
-      this.setIsWait(true);
+      this.displayWaitImage(true);
+
       speechSynthesis.cancel();
 
       const langSet = this.getLangSet();
@@ -197,29 +181,19 @@ new Vue({
       synthes.volume = 1;
       synthes.rate = 0.9;
       synthes.pitch = 0;
-      synthes.text = this.targetTranslatePhrase;
+      synthes.text = this.getTargetTranslatePhrase();
       synthes.lang = langSet[targetLanguageSymbole]['speech'];
 
       speechSynthesis.speak(synthes);
-      this.setIsWait(false);
+      this.displayWaitImage(false);
 
     },
 
-    // toggleIsWait: function (isWait) {
-    //   const one = isWait;
-    //   const two = this.getIsWait();
-    //   console.log(one);
-    //   console.log(two);
-      
-    //   const applyColor = one === two ?  "display:none" : "display:block " ;
-    //   return applyColor;
-    // },
 
     //=========================================================================-
     pushSelectedLanguage: function (langName, event) {
-      const selectLang = langName;
-      this.targetLanguageSymbole = selectLang;
-      localStorage.selectedLanguage = selectLang;
+      this.setTargetLanguageSymbole(langName);
+      this.setLocalstorageTargetLanguageSymbole(langName);
     },
 
     //=========================================================================-
@@ -272,41 +246,36 @@ new Vue({
 
     },
 
-    
-		//=========================================================================-
-		displayWaitImage: function (isWait ,event) {
-			if (isWait) {
-				document.getElementById('waitImageZone').style.display='block';
-				document.getElementById('applicationZone').style.display='none';
-			} else {
-				document.getElementById('waitImageZone').style.display='none';
-				document.getElementById('applicationZone').style.display='block';
-			}
-		},
 
-    
+    //=========================================================================-
+    displayWaitImage: function (isWait, event) {
+      if (isWait) {
+        document.getElementById('waitImageZone').style.display = 'block';
+        document.getElementById('applicationZone').style.display = 'none';
+      } else {
+        document.getElementById('waitImageZone').style.display = 'none';
+        document.getElementById('applicationZone').style.display = 'block';
+      }
+    },
+
+    methodClassAplly(select) {
+      const one = select;
+      const two = this.getTargetLanguageSymbole();
+      const applyColor = one === two ? "blue lighten-3  " : "grey lighten-3";
+      return applyColor;
+    },
+
+
     // getter___________________-
-    // get: function () { return; },
-    getIsWait: function () { return this.isWait; },
-
     getLangSet: function () { return this.langSet; },
-
-    getIsShowPreview: function () { return this.isShowPreview; },
-    getIsShowButtonScanFile: function () { return this.isShowButtonScanFile; },
-    getIsShowZoneScanedText: function () { return this.isShowZoneScanedText; },
-    getIsShowZoneDoneTranslate: function () { return this.isShowZoneDoneTranslate; },
 
     getSourceLanguageSymbole: function () { return this.sourceLanguageSymbole; },
     getSourceTranslatePhrase: function () { return this.sourceTranslatePhrase; },
     getTargetLanguageSymbole: function () { return this.targetLanguageSymbole; },
     getTargetTranslatePhrase: function () { return this.targetTranslatePhrase; },
-
-    // get: function () { return; },
+    getLocalstorageTargetLanguageSymbole: function () { return localStorage.selectedLanguage; },
 
     // setter___________________-
-    // set: function (context) { this. = context; },
-    setIsWait: function (context) { this.isWait = context; },
-
     setIsShowPreview: function (context) { this.isShowPreview = context; },
     setIsShowButtonScanFile: function (context) { this.isShowButtonScanFile = context; },
     setIsShowZoneScanedText: function (context) { this.isShowZoneScanedText = context; },
@@ -316,7 +285,7 @@ new Vue({
     setSourceTranslatePhrase: function (context) { this.sourceTranslatePhrase = context; },
     setTargetLanguageSymbole: function (context) { this.targetLanguageSymbole = context; },
     setTargetTranslatePhrase: function (context) { this.targetTranslatePhrase = context; },
-
+    setLocalstorageTargetLanguageSymbole: function (context) { localStorage.selectedLanguage = context; },
 
   }
 })
