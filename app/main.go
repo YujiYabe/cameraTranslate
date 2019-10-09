@@ -13,19 +13,21 @@ import (
 	"golang.org/x/text/language"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
-
-) 
+)
 
 func main() {
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public/"))))
 
+	// routing
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/scan", scanHandler)
 	http.HandleFunc("/translate", translateHandler)
 
+	// static file
 	http.HandleFunc("/errorPage", errorPageHandler)
 	http.HandleFunc("/sw.js", swHandler)
 	http.HandleFunc("/manifest.json", manifestHandler)
+
 	appengine.Main()
 }
 
@@ -40,7 +42,8 @@ func manifestHandler(w http.ResponseWriter, r *http.Request) {
 
 func swHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "sw.js")
-} 
+}
+
 func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 	ctx := appengine.NewContext(httpRequest)
 
