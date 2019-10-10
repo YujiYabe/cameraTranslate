@@ -77,7 +77,6 @@
 									</v-flex>
 								</div>
 
-
 								<div v-show="isShowZoneScanedText">
 
 									<!-- ====================== -->
@@ -87,7 +86,6 @@
 										<div id="sourceTranslatePhrase" v-text="sourceTranslatePhrase"
 											contenteditable="true" class="divTextarea"></div>
 									</v-flex>
-
 
 									<!-- ====================== -->
 
@@ -108,7 +106,6 @@
 
 									<v-flex d-flex xs1 sm1 md1>
 
-
 										<div v-on:click="pushSelectedLanguage('ja', $event)">
 											<v-chip :class="methodClassAplly('ja')" class="cursor">日本語</v-chip>
 										</div>
@@ -128,24 +125,20 @@
 
 									</v-flex>
 
-									<v-flex d-flex xs6 sm6 md3>
-										<h1 style="float: left">
+									<v-flex d-flex xs12 sm12 md9>
+										<v-card-title primary class="title">
+
+
 											<span>[</span>
 											<span v-text="sourceLanguageName"></span>
 											<span>]</span>
-
-
-
-
-
-
 
 											<span> ⇒ </span>
 
 											<span>[</span>
 											<span v-text="targetLanguageName"></span>
 											<span>]</span>
-										</h1>
+										</v-card-title>
 									</v-flex>
 
 									<br>
@@ -164,9 +157,6 @@
 									</div>
 								</div>
 
-
-
-
 								<br>
 								<div v-show="isShowZoneDoneTranslate">
 
@@ -177,7 +167,6 @@
 										<div id="targetTranslatePhrase" v-text="targetTranslatePhrase"
 											contenteditable="true" class="divTextarea"></div>
 									</v-flex>
-
 
 									<br>
 									<!-- ====================== -->

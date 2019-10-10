@@ -209,7 +209,7 @@ body #flexbox_container #flexbox_rght_pane #flexbox_note_pane #flexbox_note_body
 html, body {
   font-size: 16px;
   font-family: 'Noto Sans Japanese', sans-serif;
-  text-align: center;
+  /* text-align: center; */
 }
 canvas {
 border: 1px #333 solid;
