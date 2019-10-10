@@ -1,1 +1,4 @@
 dev_appserver.py app.yaml
+
+var 変換
+detect 修正

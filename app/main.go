@@ -1,5 +1,3 @@
-// dev_appserver.py app.yaml
-
 package main
 
 import (
@@ -15,40 +13,37 @@ import (
 	"golang.org/x/text/language"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
-) // -----------------------------------------------------------------
+)
 
-// -----------------------------------------------------------------
 func main() {
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public/"))))
 
+	// routing
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/scan", scanHandler)
 	http.HandleFunc("/translate", translateHandler)
 
+	// static file
 	http.HandleFunc("/errorPage", errorPageHandler)
 	http.HandleFunc("/sw.js", swHandler)
 	http.HandleFunc("/manifest.json", manifestHandler)
+
 	appengine.Main()
+}
 
-} // -----------------------------------------------------------------
-
-// -----------------------------------------------------------------
 func indexHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 	var templatefile = template.Must(template.ParseFiles("index.html"))
 	templatefile.Execute(httpResponseWriter, "index.html")
-} // -----------------------------------------------------------------
+}
 
-// -----------------------------------------------------------------
 func manifestHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "manifest.json")
-} // -----------------------------------------------------------------
+}
 
-// -----------------------------------------------------------------
 func swHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "sw.js")
-} // -----------------------------------------------------------------
+}
 
-// -----------------------------------------------------------------
 func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 	ctx := appengine.NewContext(httpRequest)
 
@@ -56,7 +51,6 @@ func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Reque
 	var e error
 
 	file, _, e = httpRequest.FormFile("selectImage")
-
 	if e != nil {
 		log.Errorf(ctx, "Error: %v", e)
 		return
@@ -85,9 +79,8 @@ func scanHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Reque
 	}
 	fmt.Fprintf(httpResponseWriter, string(jsonBytes))
 
-} // -----------------------------------------------------------------
+}
 
-// -----------------------------------------------------------------
 func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 	ctx := appengine.NewContext(httpRequest)
 
@@ -108,7 +101,6 @@ func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.
 		log.Errorf(ctx, "Failed to parse target language:: %v", e)
 	}
 
-	// Translates the text into Russian.
 	translations, e := client.Translate(ctx, []string{text}, target, nil)
 	if e != nil {
 		log.Errorf(ctx, "Failed to translate text: : %v", e)
@@ -116,9 +108,9 @@ func translateHandler(httpResponseWriter http.ResponseWriter, httpRequest *http.
 
 	fmt.Fprint(httpResponseWriter, translations[0].Text)
 
-} // -----------------------------------------------------------------
+}
 
 //「/errorPage」用のハンドラ
 func errorPageHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", "<p>Internal Server Error</p>")
-} // -----------------------------------------------------------------
+}

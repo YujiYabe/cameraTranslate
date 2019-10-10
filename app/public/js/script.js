@@ -1,318 +1,327 @@
-// https://github.com/sekiyaeiji/vue2x-demo/blob/master/README.md
-
 new Vue({
-	el: '#app',
-	data: {
-		sourceLanguageSymbole: '',
-		sourceTranslatePhrase: '',
-		targetLanguageSymbole: '',
-		targetTranslatePhrase: '',
+  el: '#app',
+  data: {
+    sourceLanguageSymbole: '',
+    sourceTranslatePhrase: '',
+    targetLanguageSymbole: '',
+    targetTranslatePhrase: '',
+    // isShowPreview: false,
+    // isShowButtonScanFile: false,
+    // isShowZoneScanedText: false,
+    // isShowZoneDoneTranslate: false,
+    isShowPreview: true,
+    isShowButtonScanFile: true,
+    isShowZoneScanedText: true,
+    isShowZoneDoneTranslate: true,
+    sourceLanguageName: '',
+    targetLanguageName: '',
+    langSet: {
+      // 'ja': { 'translate': 'jp', 'speech': 'ja-JP' },
+      // 'en': { 'translate': 'en', 'speech': 'en-US' },
+      // 'es': { 'translate': 'es', 'speech': 'es-ES' },
+      // 'fr': { 'translate': 'fr', 'speech': 'fr-FR' },
+      // 'zh': { 'translate': 'zh', 'speech': 'zh-CN' },
+      // 'ru': { 'translate': 'ru', 'speech': 'ru-RU' },
+      // 'ko': { 'translate': 'ko', 'speech': 'ko-KO' },
+      // 'ar': { 'translate': 'ar', 'speech': 'ar-AR' },
+      'ja': { 'translate': 'jp', 'speech': 'ja-JP', 'name': '日本語' },
+      'en': { 'translate': 'en', 'speech': 'en-US', 'name': 'english' },
+      'es': { 'translate': 'es', 'speech': 'es-ES', 'name': 'español' },
+      'fr': { 'translate': 'fr', 'speech': 'fr-FR', 'name': 'Français' },
+      'zh': { 'translate': 'zh', 'speech': 'zh-CN', 'name': '中文-简体' },
+      'ru': { 'translate': 'ru', 'speech': 'ru-RU', 'name': 'Русский язык' },
+      'ko': { 'translate': 'ko', 'speech': 'ko-KO', 'name': '한국어' },
+      'ar': { 'translate': 'ar', 'speech': 'ar-AR', 'name': 'العربية' },
+    }
+  },
 
-		isShowPreview: false,
-		// wait: true,
-		isShowButtonScanFile: false,
-		isShowZoneScanedText: false,
-		isShowZoneDoneTranslate: false,
-		// isShowButtonScanFile: true,
-		// isShowZoneScanedText: true,
-		// isShowZoneDoneTranslate: true,
+  mounted() {
+    //デフォルト変換先言語の設定
+    this.setTargetLanguageSymbole(this.getLocalstorageTargetLanguageSymbole() || "ja");
+    this.setTargetLanguageName(this.getTargetLanguageSymbole());
+    this.displayWaitImage(false);
+  },
+  methods: {
 
-	},
-	mounted() {
-		//デフォルト変換先言語の設定
-		var selectedLanguage = localStorage.selectedLanguage;
-		if (selectedLanguage != null) {
-			this.targetLanguageSymbole = localStorage.selectedLanguage;
-		} else {
-			this.targetLanguageSymbole = "es";
-		}
-		// this.wait = false;
-		this.displayWaitImage(false);
+    //=========================================================================-
+    canvasDraw: function (event) {
+      const file = document.getElementById('imageSelect').files[0];
 
-	},
-	methods: {
+      // //画像ファイルかチェック
+      if (file["type"] != "image/jpeg" && file["type"] != "image/png" && file["type"] != "image/gif") {
+        alert("画像ファイルを選択してください");
+        document.getElementById('imageSelect').value = ''; //選択したファイルをクリア
 
+      } else {
+        const fr = new FileReader();
+        fr.onload = function () {
+          //選択した画像を一旦imgタグに表示
+          document.getElementById('preview').src = fr.result;
 
-		//=========================================================================-
-		canvasDraw: function (event) {
-			var file = document.getElementById('imageSelect').files[0];
+          //imgタグに表示した画像をimageオブジェクトとして取得
+          const image = new Image();
+          image.src = document.getElementById('preview').src;
 
-			// //画像ファイルかチェック
-			if (file["type"] != "image/jpeg" && file["type"] != "image/png" && file["type"] != "image/gif") {
-				alert("画像ファイルを選択してください");
-				document.getElementById('imageSelect').value = ''; //選択したファイルをクリア
-			} else {
+          const id = setInterval(function () {
 
-				var fr = new FileReader();
+            if (image.width > 0) {
+              //縦横比を維持した縮小サイズを取得
+              const w = 800;
+              const ratio = w / image.width;
+              const h = image.height * ratio;
 
-				fr.onload = function () {
-					//選択した画像を一旦imgタグに表示
-					document.getElementById('preview').src = fr.result;
+              //canvasに描画
+              const canvas = document.getElementById('canvas');
+              const ctx = canvas.getContext('2d');
+              document.getElementById('canvas').setAttribute('width', w);
+              document.getElementById('canvas').setAttribute('height', h);
 
-					//imgタグに表示した画像をimageオブジェクトとして取得
-					var image = new Image();
-					image.src = document.getElementById('preview').src;
+              ctx.drawImage(image, 0, 0, w, h);
+              clearInterval(id);
+            }
+          }, 10);
 
-					var id = setInterval(function () {
+        };
+        this.setIsShowPreview(true);
+        this.setIsShowButtonScanFile(true);
 
-						if (image.width > 0) {
+        fr.readAsDataURL(file);
+      }
 
-							//縦横比を維持した縮小サイズを取得
-							var w = 800;
-							var ratio = w / image.width;
-							var h = image.height * ratio;
+    },
 
-							//canvasに描画
-							var canvas = document.getElementById('canvas');
-							var ctx = canvas.getContext('2d');
-							document.getElementById('canvas').setAttribute('width', w);
-							document.getElementById('canvas').setAttribute('height', h);
+    //=========================================================================-
+    imageUpload: function (event) {
+      this.displayWaitImage(true);
 
-							ctx.drawImage(image, 0, 0, w, h);
+      const maxSize = 2000000;
+      let formData = new FormData(document.getElementById("imageForm"));
 
-							clearInterval(id);　//idをclearIntervalで指定している
-						}
-					}, 10);
+      //画像処理してformDataに追加
+      if (Object.keys(document.getElementById('canvas')).length) {
 
+        //canvasに描画したデータを取得
+        const canvasImage = document.getElementById('canvas');
 
-				};
-				this.isShowPreview = true;
-				this.isShowButtonScanFile = true;
+        //オリジナル容量(画質落としてない場合の容量)を取得
+        const originalBinary = canvasImage.toDataURL("image/jpeg"); //画質落とさずバイナリ化
+        const originalBlob = this.base64ToBlob(originalBinary); //オリジナル容量blobデータを取得
 
-				fr.readAsDataURL(file);
-			}
+        //オリジナル容量blobデータをアップロード用blobに設定
+        const uploadBlob = originalBlob;
 
-		},
+        //オリジナル容量が2MB以上かチェック
+        if (maxSize <= originalBlob["size"]) {
 
-		//=========================================================================-
-		imageUpload: function (event) {
-			// this.wait = true;
-			this.displayWaitImage(true);
-			// var formData = new FormData(form);
-			var formData = new FormData(document.getElementById("imageForm"));
-			//画像処理してformDataに追加
-			if (Object.keys(document.getElementById('canvas')).length) {
+          const capacityRatio = maxSize / originalBlob["size"]; //2MB以下に落とす
+          const processingBinary = canvasImage.toDataURL("image/jpeg", capacityRatio); //画質落としてバイナリ化
+          uploadBlob = base64ToBlob(processingBinary); //画質落としたblobデータをアップロード用blobに設定
+        }
 
-				//canvasに描画したデータを取得
-				var canvasImage = document.getElementById('canvas');
+        //アップロード用blobをformDataに追加
+        formData.append("selectImage", uploadBlob);
+      }
 
-				//オリジナル容量(画質落としてない場合の容量)を取得
-				var originalBinary = canvasImage.toDataURL("image/jpeg"); //画質落とさずバイナリ化
-				var originalBlob = this.base64ToBlob(originalBinary); //オリジナル容量blobデータを取得
+      axios.post('scan', formData)
+        .then(function (res) {
+          this.setSourceLanguageSymbole(res.data.detectLang);
+          this.setSourceLanguageName(res.data.detectLang);
+          this.setSourceTranslatePhrase(res.data.detectString);
 
-				//オリジナル容量blobデータをアップロード用blobに設定
-				var uploadBlob = originalBlob;
+          this.setIsShowZoneScanedText(true);
+          this.displayWaitImage(false);
 
-				//オリジナル容量が2MB以上かチェック
-				if (2000000 <= originalBlob["size"]) {
-					//2MB以下に落とす
-					var capacityRatio = 2000000 / originalBlob["size"];
-					var processingBinary = canvasImage.toDataURL("image/jpeg", capacityRatio); //画質落としてバイナリ化
-					uploadBlob = base64ToBlob(processingBinary); //画質落としたblobデータをアップロード用blobに設定
-					// console.log(capacityRatio);
-					// console.log(uploadBlob["size"]);
-				}
+        }.bind(this)).catch(function (err) {
+          console.log(err);
+          this.displayWaitImage(false);
 
-				//アップロード用blobをformDataに追加
-				formData.append("selectImage", uploadBlob);
-			}
-			// console.log(this.wait);
+        }.bind(this));
 
-			axios.post('scan', formData)
-				.then(function (res) {
-					localStorage.sourceLanguageSymbole = res.data.detectLang;
-					localStorage.sourceTranslatePhrase = res.data.detectString;
-					this.sourceLanguageSymbole = localStorage.sourceLanguageSymbole;
-					this.sourceTranslatePhrase = localStorage.sourceTranslatePhrase;
-
-					// document.getElementById('targetTranslatePhrase').innerText = sourceTranslatePhrase ; 
-
-					this.isShowZoneScanedText = true;
-					// this.wait = false;
-					this.displayWaitImage(false);
-
-				}.bind(this)).catch(function (err) {
-					console.log(err);
-					// this.wait = false;
-					this.displayWaitImage(false);
-				}.bind(this));
-
-		},
-
-
-
-		//=========================================================================-
-		translateText: function (event) {
-			this.displayWaitImage(true);
-			var langPair = {};
-			langPair.ja = 'jp';
-			langPair.en = 'en';
-			langPair.es = 'es';
-			langPair.fr = 'fr';
-			langPair.zh = 'zh';
-			langPair.ru = 'ru';
-
-			localStorage.sourceTranslatePhrase = this.sourceTranslatePhrase;
-
-			var sourceTranslatePhrase = document.getElementById('sourceTranslatePhrase').innerText;
-			var targetLanguageSymbole = this.targetLanguageSymbole;
-			var sourceLanguageSymbole = this.sourceLanguageSymbole;
+    },
 
 
-			if (langPair[sourceLanguageSymbole] == targetLanguageSymbole) {
 
-				this.isShowZoneDoneTranslate = true;
+    //=========================================================================-
+    translateText: function (event) {
+      this.displayWaitImage(true);
 
-				var unescapestr = this.unescapeHTML(targetTranslate);
+      const langSet = this.getLangSet();
 
-				this.targetTranslatePhrase = unescapestr;
-				this.displayWaitImage(false);
+      const sourceTranslatePhrase = document.getElementById('sourceTranslatePhrase').innerText;
+      const targetLanguageSymbole = this.getTargetLanguageSymbole();
+      const sourceLanguageSymbole = this.getSourceLanguageSymbole();
 
-				return;
-			} else {
-				// this.wait = true;
-	
-				var post_data = new URLSearchParams();
-				post_data.append('sourceTranslatePhrase', sourceTranslatePhrase);
-				post_data.append('targetLanguageSymbole', targetLanguageSymbole);
-				// console.log(this.wait);
-				axios.post('translate', post_data)
-					.then(function (res) {
-						this.isShowZoneDoneTranslate = true;
+      if (langSet[sourceLanguageSymbole]['translate'] == targetLanguageSymbole) {
+        // 翻訳先が同じ言語であればスキップ
+        this.setIsShowZoneDoneTranslate(true);
 
-						var unescapestr = this.escapeHTML(res.data);
-						console.log(unescapestr);
+        const unescapestr = this.unescapeHTML(targetTranslate);
 
-						localStorage.targetTranslatePhrase = unescapestr;
+        this.setTargetTranslatePhrase(unescapestr);
+        this.displayWaitImage(false);
+        return;
 
-						this.targetTranslatePhrase = localStorage.targetTranslatePhrase;
-						this.displayWaitImage(false);
+      } else {
+        let post_data = new URLSearchParams();
+        post_data.append('sourceTranslatePhrase', sourceTranslatePhrase);
+        post_data.append('targetLanguageSymbole', targetLanguageSymbole);
 
-						// this.wait = false;
-					}.bind(this)).catch(function (err) {
-						this.displayWaitImage(false);
-						console.log(err);
-					}.bind(this));
-				// this.wait = false;
+        axios.post('translate', post_data)
+          .then(function (res) {
+            this.setIsShowZoneDoneTranslate(true);
 
-			}
-		},
+            const unescapestr = this.escapeHTML(res.data);
 
-		//=========================================================================-
-		speechText: function (event) {
-			this.displayWaitImage(true);
-			speechSynthesis.cancel();
+            this.setTargetTranslatePhrase(unescapestr);
+            this.displayWaitImage(false);
 
-			var langPair = {};
-			langPair.ja = 'ja-JP';
-			langPair.en = 'en-US';
-			langPair.es = 'es-ES';
-			langPair.fr = 'fr-FR';
-			langPair.zh = 'zh-CN';
-			langPair.ru = 'ru-RU';
-			langPair.ko = 'ko-KO';
-			langPair.ar = 'ar-AR';
-			var targetLanguageSymbole = this.targetLanguageSymbole;
+          }.bind(this)).catch(function (err) {
+            this.displayWaitImage(false);
+            console.log(err);
+          }.bind(this));
 
-			var synthes = new SpeechSynthesisUtterance();
-			synthes.voiceURI = 'native';
-			synthes.volume = 1;
-			synthes.rate = 0.9;
-			synthes.pitch = 0;
-			synthes.text = this.targetTranslatePhrase;
-			synthes.lang = langPair[targetLanguageSymbole];
+      }
+    },
 
-			speechSynthesis.speak(synthes);
-			this.displayWaitImage(false);
+    //=========================================================================-
+    speechText: function (event) {
+      this.displayWaitImage(true);
 
-		},
+      speechSynthesis.cancel();
 
-		//=========================================================================-
-		pushSourceTranslatePhrase: function (event) {
-			localStorage.sourceTranslatePhrase = this.sourceTranslatePhrase;
-		},
+      const langSet = this.getLangSet();
+      const targetLanguageSymbole = this.getTargetLanguageSymbole();
+
+      const synthes = new SpeechSynthesisUtterance();
+      synthes.voiceURI = 'native';
+      synthes.volume = 1;
+      synthes.rate = 0.9;
+      synthes.pitch = 0;
+      synthes.text = this.getTargetTranslatePhrase();
+      synthes.lang = langSet[targetLanguageSymbole]['speech'];
+
+      speechSynthesis.speak(synthes);
+      this.displayWaitImage(false);
+
+    },
 
 
-		//=========================================================================-
-		pushSelectedLanguage: function (langName, event) {
-			var selectLang = langName;
-			this.targetLanguageSymbole = selectLang;
-			localStorage.selectedLanguage = selectLang;
-		},
+    //=========================================================================-
+    pushSelectedLanguage: function (langName, event) {
+      this.setTargetLanguageSymbole(langName);
+      this.setLocalstorageTargetLanguageSymbole(langName);
+      this.setTargetLanguageName(langName);
 
-		//=========================================================================-
-		unescapeHTML: function (str, event) {
-			var returnstr = str
-				.replace(/&/g, "&amp;")
-				.replace(/'/g, "&#x27;")
-				.replace(/`/g, "&#x60;")
-				.replace(/"/g, "&quot;")
-				.replace(/</g, "&lt;")
-				.replace(/>/g, "&gt;")
-				.replace(/\r/g, "&#13;")
-				.replace(/\n/g, "&#10;")
+    },
 
-				; //-----------------------
-			return returnstr;
-		},
+    //=========================================================================-
+    unescapeHTML: function (str, event) {
+      const returnstr = str
+        .replace(/&/g, "&amp;")
+        .replace(/'/g, "&#x27;")
+        .replace(/`/g, "&#x60;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\r/g, "&#13;")
+        .replace(/\n/g, "&#10;")
 
-		//=========================================================================-
-		escapeHTML: function (str, event) {
-			var returnstr = str
-				.replace(/&amp;/g, "&")
-				.replace(/&#x27;/g, "'")
-				.replace(/&#39;/g, "'")
-				.replace(/&#x60;/g, "`")
-				.replace(/&quot;/g, '"')
-				.replace(/&lt;/g, "<")
-				.replace(/&gt;/g, ">")
-				.replace(/&#13;/g, "\r")
-				.replace(/&#10;/g, "\n")
-				; //-----------------------
-			return returnstr;
-		},
+        ; //-----------------------
+      return returnstr;
+    },
 
-		// 引数のBase64の文字列をBlob形式にする
-		//=========================================================================-
-		base64ToBlob: function (base64, event) {
-			var base64Data = base64.split(',')[1], // Data URLからBase64のデータ部分のみを取得
-				data = window.atob(base64Data), // base64形式の文字列をデコード
-				buff = new ArrayBuffer(data.length),
-				arr = new Uint8Array(buff),
-				blob,
-				i,
-				dataLen;
-			// blobの生成
-			for (i = 0, dataLen = data.length; i < dataLen; i++) {
-				arr[i] = data.charCodeAt(i);
-			}
-			blob = new Blob([arr], { type: 'image/jpeg' });
-			return blob;
+    //=========================================================================-
+    escapeHTML: function (str, event) {
+      const returnstr = str
+        .replace(/&amp;/g, "&")
+        .replace(/&#x27;/g, "'")
+        .replace(/&#39;/g, "'")
+        .replace(/&#x60;/g, "`")
+        .replace(/&quot;/g, '"')
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&#13;/g, "\r")
+        .replace(/&#10;/g, "\n")
+        ; //-----------------------
+      return returnstr;
+    },
 
-		},
-		//=========================================================================-
-		displayWaitImage: function (isWait ,event) {
-			if (isWait) {
-				document.getElementById('waitImageZone').style.display='block';
-				document.getElementById('applicationZone').style.display='none';
-			} else {
-				document.getElementById('waitImageZone').style.display='none';
-				document.getElementById('applicationZone').style.display='block';
-			}
-		},
+    // 引数のBase64の文字列をBlob形式にする
+    //=========================================================================-
+    base64ToBlob: function (base64, event) {
+      const base64Data = base64.split(',')[1], // Data URLからBase64のデータ部分のみを取得
+        data = window.atob(base64Data), // base64形式の文字列をデコード
+        buff = new ArrayBuffer(data.length),
+        arr = new Uint8Array(buff);
+      let blob;
+
+      // blobの生成
+      for (i = 0, dataLen = data.length; i < dataLen; i++) {
+        arr[i] = data.charCodeAt(i);
+      }
+      blob = new Blob([arr], { type: 'image/jpeg' });
+      return blob;
+
+    },
 
 
-		// //=========================================================================-
-		// testClick: function (event) {
-		// 	if (this.wait) {
-		// 		this.wait = false;
-		// 	} else {
-		// 		this.wait = true;
-		// 	}
-		// },
+    //=========================================================================-
+    displayWaitImage: function (isWait, event) {
+      if (isWait) {
+        document.getElementById('waitImageZone').style.display = 'block';
+        document.getElementById('applicationZone').style.display = 'none';
+      } else {
+        document.getElementById('waitImageZone').style.display = 'none';
+        document.getElementById('applicationZone').style.display = 'block';
+      }
+    },
+
+    methodClassAplly(select) {
+      const one = select;
+      const two = this.getTargetLanguageSymbole();
+      const applyColor = one === two ? "blue lighten-3  " : "grey lighten-3";
+      return applyColor;
+    },
 
 
-	}
+    // getter___________________-
+    getLangSet: function () { return this.langSet; },
+
+    getSourceLanguageSymbole: function () { return this.sourceLanguageSymbole; },
+    getSourceTranslatePhrase: function () { return this.sourceTranslatePhrase; },
+    getTargetLanguageSymbole: function () { return this.targetLanguageSymbole; },
+    getTargetTranslatePhrase: function () { return this.targetTranslatePhrase; },
+    getLocalstorageTargetLanguageSymbole: function () { return localStorage.selectedLanguage; },
+
+    getSourceLanguageName: function () { return this.sourceLanguageName; },
+    getTargetLanguageName: function () { return this.targetLanguageName; },
+
+    // setter___________________
+    setIsShowPreview: function (context) { this.isShowPreview = context; },
+    setIsShowButtonScanFile: function (context) { this.isShowButtonScanFile = context; },
+    setIsShowZoneScanedText: function (context) { this.isShowZoneScanedText = context; },
+    setIsShowZoneDoneTranslate: function (context) { this.isShowZoneDoneTranslate = context; },
+
+    setSourceLanguageSymbole: function (context) { this.sourceLanguageSymbole = context; },
+    setSourceTranslatePhrase: function (context) { this.sourceTranslatePhrase = context; },
+    setTargetLanguageSymbole: function (context) { this.targetLanguageSymbole = context; },
+    setTargetTranslatePhrase: function (context) { this.targetTranslatePhrase = context; },
+    setLocalstorageTargetLanguageSymbole: function (context) { localStorage.selectedLanguage = context; },
+
+    setSourceLanguageName: function (context) {
+      const langSet = this.getLangSet();
+      this.sourceLanguageName = langSet[context]['name'];
+    },
+    setTargetLanguageName: function (context) {
+      const langSet = this.getLangSet();
+      this.targetLanguageName = langSet[context]['name'];
+    },
+
+
+  }
 })
+
+
+
 
 
