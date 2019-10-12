@@ -21,10 +21,8 @@
 
 
 ## URL
-https://yujiyabe.github.io/compareplace/
+https://celestial-sum-110500.appspot.com/
 
 
 ## portfolio
 https://yujiyabe.github.io/portfolio
-
-https://celestial-sum-110500.appspot.com/
