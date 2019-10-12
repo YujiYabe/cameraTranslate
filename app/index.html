@@ -15,7 +15,8 @@
 	<script src="public/js/axios.min.js"></script>
 	<link href="public/css/vuetify.min.css" rel="stylesheet">
 	<link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
-	<meta name="theme-color" content="#317EFB" />
+	<link href="https://fonts.googleapis.com/css?family=Audiowide&display=swap" rel="stylesheet">
+		<meta name="theme-color" content="#317EFB" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
 </head>
@@ -30,12 +31,20 @@
 		<div id="applicationZone">
 			<v-app id="inspire">
 				<v-container fluid grid-list-md>
+					<!-- title ------------------------------------------ -->
+					<v-layout justify-center>
+						<v-flex xs10>
+							<div class="text-xs-center appTitle" v-on:click="reload">
+									cameraTranslate
+								</div>
+						</v-flex>
+					</v-layout>
+
+
 					<v-layout row wrap>
 
 						<v-flex d-flex xs12 sm12 md12>
 							<v-card flat="true" color="grey lighten-5" class="text-xs-center">
-
-								<v-card-title primary class="title">translate text from camera</v-card-title>
 
 								<label for="imageSelect">
 									<v-flex d-flex xs6 sm6 md3>
@@ -83,8 +92,8 @@
 									<v-card-title primary class="title">Scaned Text</v-card-title>
 
 									<v-flex d-flex xs10 sm10 md10>
-										<div id="sourceTranslatePhrase" v-text="sourceTranslatePhrase"
-											contenteditable="true" class="divTextarea"></div>
+										<div id="sourceTranslatePhrase" v-text="sourceTranslatePhrase" contenteditable="true"
+											class="divTextarea"></div>
 									</v-flex>
 
 									<!-- ====================== -->
@@ -164,8 +173,8 @@
 									<v-card-title primary class="title">Done translate</v-card-title>
 
 									<v-flex d-flex xs10 sm10 md10>
-										<div id="targetTranslatePhrase" v-text="targetTranslatePhrase"
-											contenteditable="true" class="divTextarea"></div>
+										<div id="targetTranslatePhrase" v-text="targetTranslatePhrase" contenteditable="true"
+											class="divTextarea"></div>
 									</v-flex>
 
 									<br>

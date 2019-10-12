@@ -36,6 +36,10 @@ new Vue({
   methods: {
 
     //=========================================================================-
+    reload: function (event) {
+      location.reload();
+    },
+    
     canvasDraw: function (event) {
       const file = document.getElementById('imageSelect').files[0];
 
