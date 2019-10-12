@@ -18,7 +18,11 @@
 	<link href="https://fonts.googleapis.com/css?family=Audiowide&display=swap" rel="stylesheet">
 		<meta name="theme-color" content="#317EFB" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-
+	<style>
+		[v-cloak] {
+			display: none;
+		}
+	</style>
 </head>
 
 <body>
@@ -28,7 +32,7 @@
 			<img border="0" src="./public/wait.gif" max-width="80%" max-height="80%">
 		</div>
 
-		<div id="applicationZone">
+		<div id="applicationZone" v-cloak>
 			<v-app id="inspire">
 				<v-container fluid grid-list-md>
 					<!-- title ------------------------------------------ -->
