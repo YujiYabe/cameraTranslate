@@ -18,7 +18,6 @@
 - google Cloud Translation API
 
 
-
 ## URL
 https://celestial-sum-110500.appspot.com/
 
